@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "779807337591",
+    "project_id": "sdvl-coaching",
+    "storage_bucket": "sdvl-coaching.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:779807337591:android:bb190ef3a7d445d3ac2a72",
+        "android_client_info": {
+          "package_name": "com.example.coaching_client"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC5lErS18hU0C6z0alKd-ieHTIaQchmLrM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
