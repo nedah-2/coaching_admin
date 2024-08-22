@@ -11,12 +11,6 @@ class StudentProvider with ChangeNotifier {
   List<Student> _students = [];
   List<Student> get students => _students;
 
-  List<Student> _users = [];
-  List<Student> get users => _users;
-
-  List<Student> _alumni = [];
-  List<Student> get alumni => _alumni;
-
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
 
@@ -27,8 +21,6 @@ class StudentProvider with ChangeNotifier {
   Future<void> initialize() async {
     try {
       await fetchStudents();
-      await fetchUsers();
-      await fetchAlumni();
     } finally {
       _isInitialized = true;
       notifyListeners();
@@ -48,41 +40,12 @@ class StudentProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchUsers() async {
-    try {
-      final snapshot = await _firestoreService.readDocuments('users');
-
-      _users = snapshot.docs
-          .map((doc) =>
-              Student.fromJson(doc.data() as Map<String, dynamic>, doc.id))
-          .toList();
-      notifyListeners();
-    } catch (e) {
-      print('Error fetching users: $e');
-    }
-  }
-
-  Future<void> fetchAlumni() async {
-    try {
-      final snapshot = await _firestoreService.readDocuments('alumni');
-      _alumni = snapshot.docs
-          .map((doc) =>
-              Student.fromJson(doc.data() as Map<String, dynamic>, doc.id))
-          .toList();
-      notifyListeners();
-    } catch (e) {
-      print('Error fetching alumni: $e');
-    }
-  }
-
   Future<void> addStudent(Student student) async {
     try {
       // Delete the document from the users collection if exists
       if (student.id != null) {
         await _firestoreService.deleteDocument('users', student.id!);
       }
-
-      _users.removeWhere((user) => user.id == student.id);
 
       // Check if the email exists in the alumni collection
       QuerySnapshot studentsSnapshot = await _firestoreService
@@ -118,30 +81,6 @@ class StudentProvider with ChangeNotifier {
       notifyListeners();
     } catch (e) {
       print('Error adding student: $e');
-    }
-  }
-
-  Future<void> addAlumni(Student student) async {
-    try {
-      // Delete the document from the users collection if exists
-      final String? id = student.id;
-      if (id != null) {
-        await deleteStudent(id);
-      }
-
-      _students.removeWhere((s) => s.id == id);
-
-      String userId = id!;
-
-      // Add the student to the alumni collection
-      await _firestoreService.createDocument(
-          'alumni', userId, student.toJson());
-
-      // Update local list
-      _alumni.add(student);
-      notifyListeners();
-    } catch (e) {
-      print('Error adding alumni: $e');
     }
   }
 
@@ -183,28 +122,6 @@ class StudentProvider with ChangeNotifier {
       await _firestoreService.deleteStudentWithSubcollections(id);
       // Update local list
       _students.removeWhere((student) => student.id == id);
-      notifyListeners();
-    } catch (e) {
-      print('Error deleting student: $e');
-    }
-  }
-
-  Future<void> deleteUser(String id) async {
-    try {
-      await _firestoreService.deleteDocument('users', id);
-      // Update local list
-      _users.removeWhere((user) => user.id == id);
-      notifyListeners();
-    } catch (e) {
-      print('Error deleting student: $e');
-    }
-  }
-
-  Future<void> deleteAlumnus(String id) async {
-    try {
-      await _firestoreService.deleteDocument('alumni', id);
-      // Update local list
-      _alumni.removeWhere((alumnus) => alumnus.id == id);
       notifyListeners();
     } catch (e) {
       print('Error deleting student: $e');

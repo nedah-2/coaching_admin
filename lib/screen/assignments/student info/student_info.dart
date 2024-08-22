@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:coaching_admin/models/student.dart';
 import 'package:coaching_admin/provider/auth_provider.dart';
+import 'package:coaching_admin/provider/contact_provider.dart';
 import 'package:coaching_admin/provider/student_provider.dart';
 import 'package:coaching_admin/services/storage_service.dart';
 import 'package:coaching_admin/utils/launch_link.dart';
@@ -35,38 +36,14 @@ class _StudentInfoPageState extends State<StudentInfoPage> {
   Widget build(BuildContext context) {
     final auth = Provider.of<AuthManager>(context, listen: true);
 
-    Future<void> deleteStudent() async {
-      await Provider.of<StudentProvider>(context, listen: false)
-          .deleteStudent(widget.student.id!);
+    Future<void> deleteContact() async {
+      await Provider.of<ContactProvider>(context, listen: false)
+          .deleteContact(widget.student.id!);
 
       if (context.mounted) {
         Navigator.pop(context);
         Navigator.pop(context);
         showSnackBar(context, 'A student has been deleted!');
-      }
-    }
-
-    Future<void> markAsAlumnus() async {
-      Student newStudent = Student(
-          id: widget.student.id,
-          name: widget.student.name,
-          email: widget.student.email,
-          phone: widget.student.phone,
-          age: widget.student.age,
-          gender: widget.student.gender,
-          country: widget.student.country,
-          goal: widget.student.goal,
-          profileUrl: widget.student.profileUrl,
-          startDate: DateTime.now());
-
-      await Provider.of<StudentProvider>(context, listen: false)
-          .addAlumni(newStudent);
-
-      if (context.mounted) {
-        Navigator.pop(context);
-        Navigator.pop(context);
-        Navigator.pop(context);
-        showSnackBar(context, 'A student has been marked as alumnus!');
       }
     }
 
@@ -176,7 +153,7 @@ class _StudentInfoPageState extends State<StudentInfoPage> {
                     'Delete Student',
                     "Are you sure that you want to delete this student?",
                     'Delete',
-                    deleteStudent);
+                    deleteContact);
               },
             ),
           ],
@@ -332,29 +309,6 @@ class _StudentInfoPageState extends State<StudentInfoPage> {
               ),
             ),
             const Spacer(),
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              child: OutlinedButton(
-                onPressed: () {
-                  showConfirmationDialog(
-                      context,
-                      'Mark as Alumnus',
-                      "Do you want to mark student as an alumnus?",
-                      'Confirm',
-                      markAsAlumnus);
-                },
-                style: OutlinedButton.styleFrom(
-                    minimumSize: const Size.fromHeight(44),
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8)),
-                    side: BorderSide(width: 2, color: Colors.blue.shade900)),
-                child: Text(
-                  'Mark As Alumnus',
-                  style: TextStyle(color: Colors.blue[900]),
-                ),
-              ),
-            ),
-            const SizedBox(height: 8),
             Padding(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
               child: ElevatedButton(

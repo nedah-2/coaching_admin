@@ -1,4 +1,5 @@
 import 'package:coaching_admin/models/student.dart';
+import 'package:coaching_admin/provider/contact_provider.dart';
 import 'package:coaching_admin/provider/student_provider.dart';
 import 'package:coaching_admin/utils/launch_link.dart';
 import 'package:coaching_admin/widgets/custom_snackbar.dart';
@@ -16,8 +17,8 @@ class StudentRegistrationPage extends StatelessWidget {
     final email = student.email;
 
     Future<void> deleteContact() async {
-      await Provider.of<StudentProvider>(context, listen: false)
-          .deleteUser(student.id!);
+      await Provider.of<ContactProvider>(context, listen: false)
+          .deleteContact(student.id!);
 
       if (context.mounted) {
         Navigator.pop(context);
@@ -28,7 +29,11 @@ class StudentRegistrationPage extends StatelessWidget {
 
     Future<void> registerStudent() async {
       await Provider.of<StudentProvider>(context, listen: false)
-          .addStudent(student);
+          .addStudent(student)
+          .then((result) async {
+        await Provider.of<ContactProvider>(context, listen: false)
+            .deleteMemoryContact(student.id!);
+      });
       if (context.mounted) {
         Navigator.pop(context);
         Navigator.pop(context);
