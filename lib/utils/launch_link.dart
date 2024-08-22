@@ -1,3 +1,4 @@
+import 'package:coaching_admin/widgets/custom_snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,12 +22,7 @@ Future<void> sendEmail(BuildContext context, String email) async {
     await launchUrl(emailLaunchUri);
   } catch (e) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to send email'),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      showSnackBar(context, 'Failed to send email');
     }
   }
 }
@@ -41,12 +37,20 @@ Future<void> makePhoneCall(BuildContext context, String phoneNumber) async {
     await launchUrl(launchUri);
   } catch (e) {
     if (context.mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Failed to make phone call'),
-          duration: Duration(seconds: 3),
-        ),
-      );
+      showSnackBar(context, 'Failed to make phone call');
     }
+  }
+}
+
+Future<void> launchURL(BuildContext context, String websiteUrl) async {
+  final url = Uri.parse(websiteUrl);
+  try {
+    await launchUrl(url);
+  } catch (e) {
+    // Handle Error
+    if (context.mounted) {
+      showSnackBar(context, 'Something went wrong! Try again later...');
+    }
+    return;
   }
 }

@@ -1,5 +1,6 @@
 import 'package:coaching_admin/models/task.dart';
 import 'package:coaching_admin/utils/calculate_minutes.dart';
+import 'package:coaching_admin/utils/launch_link.dart';
 import 'package:flutter/material.dart';
 
 class ResourceCard extends StatelessWidget {
@@ -46,7 +47,9 @@ class ResourceCard extends StatelessWidget {
         ),
         subtitle: Text(formatDurationFromTotalMinutes(resource.duration)),
         trailing: isEdit ? _buildDeleteButton() : const Icon(Icons.open_in_new),
-        onTap: () {},
+        onTap: () {
+          launchURL(context, resource.resource);
+        },
       ),
     );
   }

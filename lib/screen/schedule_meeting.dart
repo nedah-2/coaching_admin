@@ -361,6 +361,9 @@ class _ScheduleMeetingPageState extends State<ScheduleMeetingPage> {
           if (context.mounted && widget.meeting != null) {
             await Provider.of<ReviewProvider>(context, listen: false)
                 .updateStatus(widget.meeting!, 'Reschedule');
+            if (context.mounted) {
+              showSnackBar(context, 'Meeting has been rescheduled');
+            }
           }
 
           if (context.mounted) Navigator.of(context).pop();

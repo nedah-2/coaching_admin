@@ -53,7 +53,17 @@ class MeetingSchedulesPage extends StatelessWidget {
                     meeting.getLocalDateTime().isBefore(DateTime.now());
 
                 if (isPastMeeting) {
-                  return PastMeetingWidget(meeting: meeting);
+                  return PastMeetingWidget(
+                      contex: context,
+                      meeting: Meeting(
+                          id: meeting.id,
+                          title: meeting.title,
+                          dateTimeUtc: meeting.dateTimeUtc,
+                          mid: meeting.mid,
+                          passcode: meeting.passcode,
+                          sid: student.id,
+                          student: student.name,
+                          status: meeting.status ?? 'No Review'));
                 } else {
                   return MeetingCard(meeting: meeting);
                 }

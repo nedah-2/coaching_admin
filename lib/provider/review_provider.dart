@@ -26,16 +26,14 @@ class ReviewProvider extends ChangeNotifier {
   Future<void> fetchUnreviewedMeetings() async {
     try {
       DateTime nowUtc = DateTime.now().toUtc();
-      DateTime startOfTodayUtc =
-          DateTime.utc(nowUtc.year, nowUtc.month, nowUtc.day);
 
       final snapshot = await _firestore
           .collection('meetings')
           .where('status',
-              isEqualTo: null) // Query for documents where 'status' is null
+              isNull: true) // Query for documents where 'status' is null
           .where('dateTimeUtc',
-              isLessThan: startOfTodayUtc
-                  .toIso8601String()) // Fetch meetings before today
+              isLessThan:
+                  nowUtc.toIso8601String()) // Fetch meetings before today
           .orderBy('dateTimeUtc') // Order by 'dateTimeUtc'
           .get();
 

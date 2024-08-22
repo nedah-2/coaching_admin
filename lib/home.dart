@@ -1,8 +1,5 @@
 import 'package:coaching_admin/provider/auth_provider.dart';
-
-import 'package:coaching_admin/provider/student_provider.dart';
 import 'package:coaching_admin/provider/tab_provider.dart';
-import 'package:coaching_admin/screen/alumni.dart';
 import 'package:coaching_admin/screen/assignments/assignments.dart';
 import 'package:coaching_admin/screen/contacts/contacts.dart';
 import 'package:coaching_admin/screen/meetings/meetings.dart';
@@ -25,7 +22,7 @@ class HomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     final tabIndexProvider = Provider.of<TabIndexProvider>(context);
     final authManager = Provider.of<AuthManager>(context, listen: false);
-    final studentProvider = Provider.of<StudentProvider>(context, listen: true);
+  
 
     // Future<void> uploadSampleData(MeetingDatesProvider provider) async {
     //   final year = 2025;
@@ -86,16 +83,6 @@ class HomePage extends StatelessWidget {
           style: TextStyle(fontSize: 20),
         ),
         actions: [
-          if (studentProvider.alumni.isNotEmpty)
-            IconButton(
-                onPressed: () async {
-                  //await uploadSampleData(meetingDatesProvider);
-                  Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => const AlumniPage()));
-                },
-                icon: const Icon(Icons.group)),
           Padding(
             padding: const EdgeInsets.only(left: 4.0, right: 4.0),
             child: IconButton(

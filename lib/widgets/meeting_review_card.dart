@@ -16,7 +16,7 @@ class MeetingReviewCard extends StatelessWidget {
     required this.meeting,
   });
 
-  void _handleAction(BuildContext context, String action) {
+  void handleAction(BuildContext context, String action) {
     showConfirmationDialog(
       context,
       action,
@@ -80,7 +80,7 @@ class MeetingReviewCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8))),
                   onPressed: () {
                     // Handle "Attend" button press and update status
-                    _handleAction(context, 'Attend');
+                    handleAction(context, 'Attend');
                   },
                   child: Text(
                     'Attend',
@@ -127,10 +127,6 @@ class MeetingReviewCard extends StatelessWidget {
                         transitionDuration: const Duration(milliseconds: 1000),
                       ),
                     );
-
-                    if (context.mounted) {
-                      showSnackBar(context, 'Meeting has been rescheduled');
-                    }
                   },
                   child: Text(
                     'Cancel',
@@ -144,7 +140,7 @@ class MeetingReviewCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(8))),
                   onPressed: () {
                     // Handle "Absent" button press and update status
-                    _handleAction(context, 'Absent');
+                    handleAction(context, 'Absent');
                   },
                   child: Text(
                     'Absent',
