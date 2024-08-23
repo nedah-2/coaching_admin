@@ -40,6 +40,9 @@ class ContactProvider with ChangeNotifier {
     _isLoading = true;
     notifyListeners();
     try {
+      if (loadMore) {
+        await Future.delayed(const Duration(seconds: 1));
+      }
       Query query = _firestoreService
           .collection('users')
           .orderBy('startDate', descending: true)

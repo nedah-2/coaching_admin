@@ -7,12 +7,23 @@ import 'package:flutter/material.dart';
 class StudentProvider with ChangeNotifier {
   final FirestoreService _firestoreService = FirestoreService();
   final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   List<Student> _students = [];
   List<Student> get students => _students;
 
   bool _isInitialized = false;
   bool get isInitialized => _isInitialized;
+
+  DocumentSnapshot? _lastDocument;
+
+  bool _hasMoreStudents = true;
+  bool get hasMoreStudents => _hasMoreStudents;
+
+  bool _isLoading = false;
+  bool get isLoading => _isLoading;
+
+  final int _limit = 8; // Number of documents to fetch per page
 
   StudentProvider() {
     initialize();
@@ -27,16 +38,51 @@ class StudentProvider with ChangeNotifier {
     }
   }
 
-  Future<void> fetchStudents() async {
+  Future<void> fetchStudents({bool loadMore = false}) async {
+    if (_isLoading || !_hasMoreStudents) return;
+
+    _isLoading = true;
+    notifyListeners();
+
     try {
-      final snapshot = await _firestoreService.readDocuments('students');
-      _students = snapshot.docs
-          .map((doc) =>
-              Student.fromJson(doc.data() as Map<String, dynamic>, doc.id))
-          .toList();
+      if (loadMore) {
+        await Future.delayed(const Duration(seconds: 1));
+      }
+      Query query =
+          _firestore.collection('students').orderBy('name').limit(_limit);
+
+      if (loadMore && _lastDocument != null) {
+        query = query.startAfterDocument(_lastDocument!);
+      }
+
+      final snapshot = await query.get();
+
+      if (snapshot.docs.isNotEmpty) {
+        _lastDocument = snapshot.docs.last;
+
+        final fetchedStudents = snapshot.docs
+            .map((doc) =>
+                Student.fromJson(doc.data() as Map<String, dynamic>, doc.id))
+            .toList();
+
+        if (loadMore) {
+          _students.addAll(fetchedStudents);
+        } else {
+          _students = fetchedStudents;
+        }
+
+        if (fetchedStudents.length < _limit) {
+          _hasMoreStudents = false; // No more documents to load
+        }
+      } else {
+        _hasMoreStudents = false; // No more documents to load
+      }
+
       notifyListeners();
     } catch (e) {
       print('Error fetching students: $e');
+    } finally {
+      _isLoading = false;
     }
   }
 
@@ -75,7 +121,7 @@ class StudentProvider with ChangeNotifier {
         student.id = userId;
 
         // Update local list
-        _students.add(student);
+        _students.insert(0, student);
       }
 
       notifyListeners();
@@ -132,28 +178,10 @@ class StudentProvider with ChangeNotifier {
     return _students.firstWhere((student) => student.id == id);
   }
 
-  Future<void> addSubcollectionDocument(String studentId,
-      String subCollectionPath, Map<String, dynamic> data) async {
-    try {
-      await _firestoreService.createDocument('students', studentId, data,
-          subCollectionPath: subCollectionPath);
-      notifyListeners();
-    } catch (e) {
-      print('Error adding subcollection document: $e');
-    }
-  }
-
-  Future<void> updateSubcollectionDocument(
-      String studentId,
-      String subCollectionPath,
-      String subDocId,
-      Map<String, dynamic> data) async {
-    try {
-      await _firestoreService.updateDocument('students', studentId, data,
-          subCollectionPath: subCollectionPath, subDocId: subDocId);
-      notifyListeners();
-    } catch (e) {
-      print('Error updating subcollection document: $e');
-    }
+  void resetPagination() {
+    _lastDocument = null;
+    _hasMoreStudents = true;
+    _students.clear();
+    fetchStudents();
   }
 }
